@@ -4,11 +4,13 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
 import static android.app.PendingIntent.FLAG_CANCEL_CURRENT;
+import static android.os.Build.VERSION.SDK_INT;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,8 +45,12 @@ public class MainActivity extends AppCompatActivity {
         intent.setAction("Alarm Activity");
         PendingIntent pendingIntent = PendingIntent.getActivity(this,
                 100,intent,FLAG_CANCEL_CURRENT);
-
-        alarmManager.set(AlarmManager.RTC_WAKEUP,System.currentTimeMillis()+10*1000,pendingIntent);
+        if(SDK_INT < Build.VERSION_CODES.M) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 1000, pendingIntent);
+        } else if (SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + 10 * 1000, pendingIntent);
+        }
     }
 
     private void createAlarmService() {
